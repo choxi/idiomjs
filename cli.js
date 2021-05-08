@@ -1,9 +1,11 @@
+#!/usr/bin/env node
+
 const fs = require("fs")
 const express = require("express")
 const chokidar = require("chokidar")
 
-const Builder = require("./builder")
-const Renderer = require("./renderer")
+const Builder = require("./src/builder")
+const Renderer = require("./src/renderer")
 
 const builder = new Builder()
 const renderer = new Renderer()
