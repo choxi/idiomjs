@@ -20,11 +20,9 @@ class Totem {
   }
 
   build(callback=() => {}) {
-    console.log("Creating dist directory...")
     fs.rmdirSync("./dist", { recursive: true, force: true })
     fs.mkdirSync("./dist")
 
-    console.log("Buildings components...")
     const componentPaths = fs.readdirSync("./components")
                              .filter(p => p.split(".")[1] === "jsx")
     const componentConfigs = componentPaths.map(path => {
@@ -104,8 +102,6 @@ class Totem {
 
       fse.copySync("./assets", "./dist/assets")
 
-      console.log("Site generated")
-
       const outputPages = pageConfigs.map(config => {
         return {
           name: config.name,
@@ -119,15 +115,3 @@ class Totem {
 }
 
 module.exports = Totem
-
-
-// TODO
-// - [X] Support SASS/assets
-// - [ ] Add prerendering
-// - [X] Allow multiple pages
-// - [ ] Allow third-party modules (Helmet)
-// - [X] Run a server (links don't work from filesystem)
-//
-// Open Questions
-// - What should the directory structure be for images, other JS, and assets?
-

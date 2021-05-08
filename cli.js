@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 const fs = require("fs")
+const path = require("path")
+
 const express = require("express")
 const chokidar = require("chokidar")
 
@@ -10,12 +12,14 @@ const Renderer = require("./src/renderer")
 const builder = new Builder()
 const renderer = new Renderer()
 const app = express()
+const outputDirectory = path.join(".", "dist")
 
 const command = process.argv[2]
 
+
 if (command === "build") {
   const port = 1111
-  app.use(express.static("./dist"))
+  app.use(express.static(path.join(outputDirectory)))
 
   const server = app.listen(port, () => {
     builder.build(pages => {
@@ -24,7 +28,10 @@ if (command === "build") {
         return renderer.render(url).then(body => fs.writeFileSync(page.path, body))
       })
 
-      Promise.all(promises).then(() => server.close())
+      Promise.all(promises).then(() => {
+        console.log("Site generated")
+        server.close()
+      })
     })
   })
 }
@@ -43,7 +50,7 @@ if (command === "serve") {
   })
 
   builder.build()
-  app.use(express.static("./dist"))
+  app.use(express.static(outputDirectory))
 
   app.listen(port, () => {
     console.log(`Listening on http://localhost:${port}`)
