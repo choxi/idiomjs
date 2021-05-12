@@ -64,17 +64,14 @@ class Totem {
         }
 
         function init${ page.klass }() {
-          console.log("initIdiom")
           const container = document.getElementById("${ page.klass }")
 
           if (container && container.children.length === 0) {
-            console.log("render")
             ReactDOM.render(<${ page.klass } />, container)
             return
           }
 
           if (container && container.children.length > 0) {
-            console.log("hydrate")
             ReactDOM.hydrate(<${ page.klass } />, container)
             return
           }
@@ -83,10 +80,8 @@ class Totem {
         }
 
         if(document.readyState !== 'loading') {
-          console.log("document already ready")
           init${ page.klass }()
         } else {
-          console.log("document not ready")
           document.addEventListener('DOMContentLoaded', function () {
             init${ page.klass }()
           })
