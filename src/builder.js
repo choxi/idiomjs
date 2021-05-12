@@ -10,7 +10,7 @@ class Totem {
       <html>
         <head>
           <link rel="stylesheet" href="./index.css">
-          <script src="./index.js"></script>
+          <script async src="./index.js"></script>
         </head>
         <body>
           <div id="${ page }"></div>
@@ -63,17 +63,34 @@ class Totem {
           }
         }
 
-        document.addEventListener('DOMContentLoaded', (event) => {
+        function init${ page.klass }() {
+          console.log("initIdiom")
           const container = document.getElementById("${ page.klass }")
 
           if (container && container.children.length === 0) {
+            console.log("render")
             ReactDOM.render(<${ page.klass } />, container)
+            return
           }
 
           if (container && container.children.length > 0) {
+            console.log("hydrate")
             ReactDOM.hydrate(<${ page.klass } />, container)
+            return
           }
-        })
+
+          console.log(\`container: ${ page.klass } not found \`)
+        }
+
+        if(document.readyState !== 'loading') {
+          console.log("document already ready")
+          init${ page.klass }()
+        } else {
+          console.log("document not ready")
+          document.addEventListener('DOMContentLoaded', function () {
+            init${ page.klass }()
+          })
+        }
       `
     })
 
