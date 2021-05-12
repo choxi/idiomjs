@@ -50,3 +50,17 @@ $ idiomjs build
 ```
 
 This creates a `dist` directory that can be deployed to GitHub pages or any other static site host. The `build` command automatically prerenders your pages using `jsdom` so they can be parsed by search engines.
+
+## Development
+
+TODO
+
+   - [ ] Catch esbuild errors and display them in the server log (sometimes _index.js does not build)
+   - [ ] Don't use /dist for development output
+   - [ ] Rename "serve" command to develop. Add a "-h" option to CLI
+   - [ ] Add react-helmet and docs for using it
+   - [ ] Add docs for how directory structure works (rename "assets" to "static"?)
+   - [ ] Auto-refresh page on changes
+   - [ ] Remove file change logs from server output
+   - [ ] Minify build for production
+   - [ ] Add source maps for development
