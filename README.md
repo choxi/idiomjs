@@ -75,5 +75,5 @@ TODO
    - [ ] Add docs for how directory structure works (rename "assets" to "static"?)
    - [ ] Auto-refresh page on changes
    - [ ] Remove file change logs from server output
-   - [ ] Minify build for production
+   - [x] Minify build for production
    - [ ] Add source maps for development

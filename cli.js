@@ -22,7 +22,7 @@ if (command === "build") {
   app.use(express.static(path.join(outputDirectory)))
 
   const server = app.listen(port, () => {
-    builder.build(pages => {
+    builder.build({ minify: true }, pages => {
       const promises = pages.map(page => {
         const url = `http://localhost:${ port }/${ page.name }.html`
         return renderer.render(url).then(body => fs.writeFileSync(page.path, body))

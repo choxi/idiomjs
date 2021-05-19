@@ -19,7 +19,7 @@ class Totem {
     `
   }
 
-  build(callback=() => {}) {
+  build(options={ minify: false }, callback=() => {}) {
     fs.rmdirSync("./dist", { recursive: true, force: true })
     fs.mkdirSync("./dist")
 
@@ -103,6 +103,7 @@ class Totem {
     esbuild.build({
       entryPoints: ["./dist/_index.jsx"],
       bundle: true,
+      minify: options.minify,
       outfile: "./dist/index.js",
       plugins: [ sassPlugin() ]
     }).then(() => {
