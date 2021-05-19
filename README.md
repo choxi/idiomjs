@@ -53,6 +53,19 @@ This creates a `dist` directory that can be deployed to GitHub pages or any othe
 
 ## Development
 
+To run idiomjs while developing locally:
+
+```console
+$ cd /path/to/idiomjs
+$ npm link
+$ cd /path/to/test/site
+$ npm link idiomjs
+$ idiomjs serve
+```
+
+Now when you make changes to the `idiomjs` source, you can restart the server to test those changes. See the docs on [npm-link](https://docs.npmjs.com/cli/v7/commands/npm-link) for more info.
+
+
 TODO
 
    - [ ] Catch esbuild errors and display them in the server log (sometimes _index.js does not build)
