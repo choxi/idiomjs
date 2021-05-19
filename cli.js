@@ -50,7 +50,7 @@ if (command === "serve") {
   })
 
   builder.build()
-  app.use(express.static(outputDirectory))
+  app.use(express.static(outputDirectory, { extensions: [ "html" ] }))
 
   app.listen(port, () => {
     console.log(`Listening on http://localhost:${port}`)
