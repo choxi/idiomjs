@@ -76,4 +76,4 @@ TODO
    - [ ] Auto-refresh page on changes
    - [ ] Remove file change logs from server output
    - [x] Minify build for production
-   - [ ] Add source maps for development
+   - [x] Add source maps for development

@@ -45,11 +45,11 @@ if (command === "serve") {
   watcher.on("ready", () => {
     watcher.on("all", (event, path) => {
       console.log(event, path)
-      builder.build()
+      builder.build({ sourcemap: true })
     })
   })
 
-  builder.build()
+  builder.build({ sourcemap: true })
   app.use(express.static(outputDirectory, { extensions: [ "html" ] }))
 
   app.listen(port, () => {

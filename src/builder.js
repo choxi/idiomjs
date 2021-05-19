@@ -19,7 +19,7 @@ class Totem {
     `
   }
 
-  build(options={ minify: false }, callback=() => {}) {
+  build(options={ minify: false, sourcemap: false }, callback=() => {}) {
     fs.rmdirSync("./dist", { recursive: true, force: true })
     fs.mkdirSync("./dist")
 
@@ -104,6 +104,7 @@ class Totem {
       entryPoints: ["./dist/_index.jsx"],
       bundle: true,
       minify: options.minify,
+      sourcemap: options.sourcemap,
       outfile: "./dist/index.js",
       plugins: [ sassPlugin() ]
     }).then(() => {
