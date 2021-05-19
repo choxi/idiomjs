@@ -8,7 +8,6 @@ const path = require("path")
 const componentsDir = path.join(".", "components")
 const pagesDir = path.join(".", "pages")
 const assetsDir = path.join(".", "assets")
-const buildDir = path.join(".", "build")
 
 class Totem {
   htmlTemplate(page) {
@@ -93,7 +92,7 @@ class Totem {
     })
   }
 
-  build(options={ minify: false, sourcemap: false }, callback=() => {}) {
+  build(buildDir, options={ minify: false, sourcemap: false }, callback=() => {}) {
     fs.rmdirSync(buildDir, { recursive: true, force: true })
     fs.mkdirSync(buildDir)
 

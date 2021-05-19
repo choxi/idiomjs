@@ -69,7 +69,7 @@ Now when you make changes to the `idiomjs` source, you can restart the server to
 TODO
 
    - [ ] Catch esbuild errors and display them in the server log (sometimes _index.js does not build)
-   - [ ] Don't use /dist for development output
+   - [x] Don't use /dist for development output
    - [ ] Rename "serve" command to develop. Add a "-h" option to CLI
    - [ ] Add react-helmet and docs for using it
    - [ ] Add docs for how directory structure works (rename "assets" to "static"?)
