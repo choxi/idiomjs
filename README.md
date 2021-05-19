@@ -68,12 +68,13 @@ Now when you make changes to the `idiomjs` source, you can restart the server to
 
 TODO
 
+   - [ ] Fix React Helmet prerendering (https://github.com/nfl/react-helmet#server-usage)
+   - [ ] Auto-refresh page on changes
    - [ ] Catch esbuild errors and display them in the server log (sometimes _index.js does not build)
-   - [x] Don't use /dist for development output
    - [ ] Rename "serve" command to develop. Add a "-h" option to CLI
    - [ ] Add react-helmet and docs for using it
    - [ ] Add docs for how directory structure works (rename "assets" to "static"?)
-   - [ ] Auto-refresh page on changes
-   - [ ] Remove file change logs from server output
+   - [x] Don't use /dist for development output
+   - [x] Remove file change logs from server output
    - [x] Minify build for production
    - [x] Add source maps for development
