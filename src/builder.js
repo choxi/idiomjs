@@ -3,9 +3,15 @@ const fs = require("fs")
 const fse = require("fs-extra")
 const pascalCase = require("pascalcase")
 const sassPlugin = require('esbuild-plugin-sass')
+const path = require("path")
+
+const componentsDir = path.join(".", "components")
+const pagesDir = path.join(".", "pages")
+const assetsDir = path.join(".", "assets")
+const buildDir = path.join(".", "build")
 
 class Totem {
-  template(page) {
+  htmlTemplate(page) {
     return `
       <html>
         <head>
@@ -19,13 +25,47 @@ class Totem {
     `
   }
 
-  build(options={ minify: false, sourcemap: false }, callback=() => {}) {
-    fs.rmdirSync("./dist", { recursive: true, force: true })
-    fs.mkdirSync("./dist")
+  pageTemplate(klass, body) {
+    return `
+      class ${ klass } extends React.Component {
+        render() {
+          return (
+            ${ body }
+          )
+        }
+      }
 
-    const componentPaths = fs.readdirSync("./components")
+      function init${ klass }() {
+        const container = document.getElementById("${ klass }")
+
+        if (container && container.children.length === 0) {
+          ReactDOM.render(<${ klass } />, container)
+          return
+        }
+
+        if (container && container.children.length > 0) {
+          ReactDOM.hydrate(<${ klass } />, container)
+          return
+        }
+
+        console.log(\`container: ${ klass } not found \`)
+      }
+
+      if(document.readyState !== 'loading') {
+        init${ klass }()
+      } else {
+        document.addEventListener('DOMContentLoaded', function () {
+          init${ klass }()
+        })
+      }
+    `
+  }
+
+  components() {
+    const componentPaths = fs.readdirSync(componentsDir)
                              .filter(p => p.split(".")[1] === "jsx")
-    const componentConfigs = componentPaths.map(path => {
+
+    return componentPaths.map(path => {
       const tag = path.split(".")[0]
       const klass = pascalCase(tag)
 
@@ -35,13 +75,11 @@ class Totem {
         path: path
       }
     })
+  }
 
-    const importStatements = componentConfigs.map(config => {
-      return `import ${ config.klass } from "../components/${ config.path }"`
-    })
-
-    const pagePaths = fs.readdirSync("./pages")
-    const pageConfigs = pagePaths.map(path => {
+  pages() {
+    const pagePaths = fs.readdirSync(pagesDir)
+    return pagePaths.map(path => {
       const name = path.split(".")[0]
       const klass = pascalCase(name)
       const body = fs.readFileSync(`./pages/${ path }`)
@@ -53,41 +91,17 @@ class Totem {
         body: body
       }
     })
-    const pageComponents = pageConfigs.map(page => {
-      return `
-        class ${ page.klass } extends React.Component {
-          render() {
-            return (
-              ${ page.body }
-            )
-          }
-        }
+  }
 
-        function init${ page.klass }() {
-          const container = document.getElementById("${ page.klass }")
+  build(options={ minify: false, sourcemap: false }, callback=() => {}) {
+    fs.rmdirSync(buildDir, { recursive: true, force: true })
+    fs.mkdirSync(buildDir)
 
-          if (container && container.children.length === 0) {
-            ReactDOM.render(<${ page.klass } />, container)
-            return
-          }
-
-          if (container && container.children.length > 0) {
-            ReactDOM.hydrate(<${ page.klass } />, container)
-            return
-          }
-
-          console.log(\`container: ${ page.klass } not found \`)
-        }
-
-        if(document.readyState !== 'loading') {
-          init${ page.klass }()
-        } else {
-          document.addEventListener('DOMContentLoaded', function () {
-            init${ page.klass }()
-          })
-        }
-      `
+    const importStatements = this.components().map(component => {
+      return `import ${ component.klass } from "../components/${ component.path }"`
     })
+    const pages = this.pages()
+    const pageComponents = pages.map(page => this.pageTemplate(page.klass, page.body))
 
     const componentsEntrypoint = `
       import React from "react"
@@ -98,28 +112,29 @@ class Totem {
       ${ pageComponents.join("\n") }
     `
 
-    fs.writeFileSync("./dist/_index.jsx", componentsEntrypoint)
+    const entrypointPath = path.join(buildDir, "_index.jsx")
+    fs.writeFileSync(entrypointPath, componentsEntrypoint)
 
     esbuild.build({
-      entryPoints: ["./dist/_index.jsx"],
+      entryPoints: [ entrypointPath ],
       bundle: true,
       minify: options.minify,
       sourcemap: options.sourcemap,
-      outfile: "./dist/index.js",
+      outfile: path.join(buildDir, "index.js"),
       plugins: [ sassPlugin() ]
     }).then(() => {
-      fse.removeSync("./dist/_index.jsx")
+      fse.removeSync(entrypointPath)
 
-      pageConfigs.forEach(page => {
-        fs.writeFileSync(`./dist/${ page.name }.html`, this.template(page.klass))
+      pages.forEach(page => {
+        fs.writeFileSync(path.join(buildDir, `${ page.name }.html`), this.htmlTemplate(page.klass))
       })
 
-      fse.copySync("./assets", "./dist/assets")
+      fse.copySync(assetsDir, path.join(buildDir, "assets"))
 
-      const outputPages = pageConfigs.map(config => {
+      const outputPages = pages.map(config => {
         return {
           name: config.name,
-          path: `./dist/${ config.name }.html`
+          path: path.join(buildDir, `${ config.name }.html`)
         }
       })
 

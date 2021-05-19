@@ -38,21 +38,15 @@ if (command === "build") {
 
 if (command === "serve") {
   const port = 1234
-  const watcher = chokidar.watch(".", {
-    ignored: /dist|node_modules|.cache|.git/
-  })
+  const watcher = chokidar.watch(".", { ignored: /build|dist|node_modules|.cache|.git/ })
 
   watcher.on("ready", () => {
     watcher.on("all", (event, path) => {
-      console.log(event, path)
       builder.build({ sourcemap: true })
     })
   })
 
   builder.build({ sourcemap: true })
   app.use(express.static(outputDirectory, { extensions: [ "html" ] }))
-
-  app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`)
-  })
+  app.listen(port, () => console.log(`Listening on http://localhost:${port}`))
 }
