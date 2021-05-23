@@ -5,9 +5,14 @@ const path = require("path")
 
 const express = require("express")
 const chokidar = require("chokidar")
+const esbuild = require("esbuild")
+const ReactDOMServer = require("react-dom/server")
+const React = require("react")
+const Helmet = require("react-helmet")
 
 const Builder = require("./src/builder")
 const Renderer = require("./src/renderer")
+const Prerenderer = require("./src/prerenderer")
 
 const builder = new Builder()
 const renderer = new Renderer()
@@ -34,6 +39,46 @@ if (command === "build") {
       })
     })
   })
+}
+
+if (command === "build2") {
+  const renderer = new Prerenderer()
+
+  // const pages = getPages()
+  // pages.forEach(page => {
+    // Try testing this with a simple component
+    //
+    const page = { path: path.join(".", "test.jsx") }
+    output = "./temp-component.js"
+    const options = {
+      entryPoints: [ page.path ],
+      outfile: output,
+      platform: "node",
+      format: "cjs"
+    }
+    esbuild.build(options).then(() => {
+      const loadPath = path.resolve(output)
+      const Component = require(loadPath).default
+      const body = ReactDOMServer.renderToString(React.createElement(Component))
+      // Does this work for multiple components?
+      const helmet = Helmet.default.renderStatic()
+      console.log(helmet.title.toString())
+      const html = `
+        <html>
+          <head>
+            <script src="/index.js">
+            <script src="/index.css">
+          </head>
+          <body>
+            <div id="${ page.klass }">
+              ${ body }
+            </div>
+          </body>
+        </html>
+      `
+      renderer.render(page)
+    })
+  // })
 }
 
 if (command === "serve") {
