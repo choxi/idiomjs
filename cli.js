@@ -45,11 +45,13 @@ if (command === "build2") {
   const renderer = new Prerenderer()
 
   // const pages = getPages()
-  // pages.forEach(page => {
-    // Try testing this with a simple component
-    //
-    const page = { path: path.join(".", "test.jsx") }
-    output = "./temp-component.js"
+  const pages = [
+    { klass: "Test", path: path.join(".", "test.jsx") },
+    { klass: "Test2", path: path.join(".", "test2.jsx") }
+  ]
+
+  pages.forEach(page => {
+    const output = `./node-${ path.basename(page.path, ".jsx") }.js`
     const options = {
       entryPoints: [ page.path ],
       outfile: output,
@@ -60,25 +62,32 @@ if (command === "build2") {
       const loadPath = path.resolve(output)
       const Component = require(loadPath).default
       const body = ReactDOMServer.renderToString(React.createElement(Component))
-      // Does this work for multiple components?
       const helmet = Helmet.default.renderStatic()
-      console.log(helmet.title.toString())
       const html = `
-        <html>
+        <!doctype html>
+        <html ${ helmet.htmlAttributes.toString() }>
           <head>
             <script src="/index.js">
             <script src="/index.css">
+
+            ${ helmet.title.toString() }
+            ${ helmet.meta.toString() }
+            ${ helmet.link.toString() }
+            ${ helmet.script.toString() }
+            ${ helmet.noscript.toString() }
+            ${ helmet.style.toString() }
           </head>
-          <body>
+          <body ${ helmet.bodyAttributes.toString() }>
             <div id="${ page.klass }">
               ${ body }
             </div>
           </body>
         </html>
       `
+      console.log(html)
       renderer.render(page)
     })
-  // })
+  })
 }
 
 if (command === "serve") {
