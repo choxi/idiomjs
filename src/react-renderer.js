@@ -7,10 +7,12 @@ const SassPlugin = require('esbuild-plugin-sass')
 
 const React = require("react")
 const Helmet = require("react-helmet").default
+const tmpDir = path.resolve(path.join(__dirname, "../", "tmp"))
 
 class ReactRenderer {
   render(project, buildDir) {
     fse.mkdirp(buildDir)
+    fse.mkdirp(tmpDir)
 
     const pages = project.pages()
     const importStatements = project.components().map(component => {
@@ -34,8 +36,12 @@ class ReactRenderer {
       const pageName = path.basename(page.path, ".jsx")
       const entrypointPath = path.join(buildDir, `entry-${ pageName }.jsx`)
       fs.writeFileSync(entrypointPath, entrypointBody)
-      const outfilePath = path.join(buildDir, `node-${ pageName }.js`)
-      const cssOutPath = path.join(buildDir, `node-${ pageName }.css`)
+
+      // Generate files into a tmp directory in the idiomjs module directory
+      // so we always use the local copy of react-helmet. Otherwise helmet.title
+      // returns blanks if you try to use a global install of idiomjs
+      const outfilePath = path.join(tmpDir, "../", `node-${ pageName }.js`)
+      const cssOutPath = path.join(tmpDir, "../", `node-${ pageName }.css`)
 
       const options = {
         entryPoints: [ entrypointPath ],
@@ -48,11 +54,7 @@ class ReactRenderer {
       }
 
       esbuild.build(options).then(() => {
-        // TODO:
-        // This loads react-helmet from the project modules
-        // instead of idiomjs modules, which breaks using
-        // a global idiomjs installation.
-        const loadPath = path.resolve(outfilePath)
+        const loadPath = outfilePath
         const Component = require(loadPath).default
         const body = ReactDOMServer.renderToString(React.createElement(Component))
         const helmet = Helmet.renderStatic()
@@ -85,6 +87,8 @@ class ReactRenderer {
         fse.removeSync(cssOutPath)
       })
     })
+
+    fse.rmdirSync(tmpDir)
   }
 }
 
