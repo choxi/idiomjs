@@ -78,14 +78,14 @@ class Totem {
 
   pages() {
     const pagePaths = fs.readdirSync(pagesDir)
-    return pagePaths.map(path => {
-      const name = path.split(".")[0]
+    return pagePaths.map(p => {
+      const name = p.split(".")[0]
       const klass = pascalCase(name)
-      const body = fs.readFileSync(`./pages/${ path }`)
+      const body = fs.readFileSync(`./pages/${ p }`)
 
       return {
         name: name,
-        path: path,
+        path: p,
         klass: klass,
         body: body
       }

@@ -8,7 +8,8 @@ const chokidar = require("chokidar")
 const esbuild = require("esbuild")
 const ReactDOMServer = require("react-dom/server")
 const React = require("react")
-const Helmet = require("react-helmet")
+const Helmet = require("react-helmet").default
+const sassPlugin = require('esbuild-plugin-sass')
 
 const Builder = require("./src/builder")
 const Renderer = require("./src/renderer")
@@ -43,32 +44,52 @@ if (command === "build") {
 
 if (command === "build2") {
   const renderer = new Prerenderer()
-
-  // const pages = getPages()
-  const pages = [
-    { klass: "Test", path: path.join(".", "test.jsx") },
-    { klass: "Test2", path: path.join(".", "test2.jsx") }
-  ]
+  const pages = builder.pages()
+  const importStatements = builder.components().map(component => {
+    return `import ${ component.klass } from "../components/${ component.path }"`
+  })
 
   pages.forEach(page => {
-    const output = `./node-${ path.basename(page.path, ".jsx") }.js`
+    const entrypointBody = `
+      import React from "react"
+
+      ${ importStatements.join("\n") }
+
+      export default class ${ page.klass } extends React.Component {
+        render() {
+          return (
+            ${ page.body }
+          )
+        }
+      }
+    `
+    const pageName = path.basename(page.path, ".jsx")
+    const entrypointPath = path.join(buildDir, `entry-${ pageName }.jsx`)
+    fs.writeFileSync(entrypointPath, entrypointBody)
+    const outfilePath = path.join(buildDir, `node-${ pageName }.js`)
+
     const options = {
-      entryPoints: [ page.path ],
-      outfile: output,
+      entryPoints: [ entrypointPath ],
+      bundle: true,
+      outfile: outfilePath,
       platform: "node",
-      format: "cjs"
+      format: "cjs",
+      external: [ "react-helmet" ],
+      plugins: [ sassPlugin() ]
     }
+
     esbuild.build(options).then(() => {
-      const loadPath = path.resolve(output)
+      const loadPath = path.resolve(outfilePath)
       const Component = require(loadPath).default
       const body = ReactDOMServer.renderToString(React.createElement(Component))
-      const helmet = Helmet.default.renderStatic()
+      const helmet = Helmet.renderStatic()
+      console.log(helmet.title.toString())
       const html = `
         <!doctype html>
         <html ${ helmet.htmlAttributes.toString() }>
           <head>
-            <script src="/index.js">
-            <script src="/index.css">
+            <link rel="stylesheet" href="/index.css">
+            <script async src="/index.js"></script>
 
             ${ helmet.title.toString() }
             ${ helmet.meta.toString() }
@@ -84,8 +105,8 @@ if (command === "build2") {
           </body>
         </html>
       `
-      console.log(html)
-      renderer.render(page)
+      const prerenderedOutputPath = path.join(buildDir, `${ pageName }.html`)
+      fs.writeFileSync(prerenderedOutputPath, html)
     })
   })
 }
