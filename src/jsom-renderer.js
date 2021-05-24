@@ -22,7 +22,7 @@ virtualConsole.on("jsdomError", (error) => {
   // }
 })
 
-class Renderer {
+class JSDOMRenderer {
   render(url) {
     return new Promise(resolve => {
       JSDOM.fromURL(url, options)
@@ -34,4 +34,4 @@ class Renderer {
   }
 }
 
-module.exports = Renderer
+module.exports = JSDOMRenderer

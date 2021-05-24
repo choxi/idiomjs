@@ -10,6 +10,8 @@ const Helmet = require("react-helmet").default
 
 class ReactRenderer {
   render(project, buildDir) {
+    fse.mkdirp(buildDir)
+
     const pages = project.pages()
     const importStatements = project.components().map(component => {
       return `import ${ component.klass } from "../components/${ component.path }"`
@@ -33,6 +35,7 @@ class ReactRenderer {
       const entrypointPath = path.join(buildDir, `entry-${ pageName }.jsx`)
       fs.writeFileSync(entrypointPath, entrypointBody)
       const outfilePath = path.join(buildDir, `node-${ pageName }.js`)
+      const cssOutPath = path.join(buildDir, `node-${ pageName }.css`)
 
       const options = {
         entryPoints: [ entrypointPath ],
@@ -79,6 +82,7 @@ class ReactRenderer {
         fs.writeFileSync(prerenderedOutputPath, html)
         fse.removeSync(outfilePath)
         fse.removeSync(entrypointPath)
+        fse.removeSync(cssOutPath)
       })
     })
   }
