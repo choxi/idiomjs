@@ -20,6 +20,7 @@ class Builder {
     const componentsEntrypoint = `
       import React from "react"
       import ReactDOM from "react-dom"
+      import Helmet from "react-helmet"
 
       ${ importStatements.join("\n") }
 

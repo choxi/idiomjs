@@ -22,6 +22,7 @@ class ReactRenderer {
     pages.forEach(page => {
       const entrypointBody = `
         import React from "react"
+        import Helmet from "react-helmet"
 
         ${ importStatements.join("\n") }
 

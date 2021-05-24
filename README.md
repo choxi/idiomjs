@@ -51,6 +51,37 @@ $ idiomjs build
 
 This creates a `dist` directory that can be deployed to GitHub pages or any other static site host. The `build` command automatically prerenders your pages using `jsdom` so they can be parsed by search engines.
 
+## Writing Pages
+
+Since Idiom autoloads your components, a page is just a JSX expression:
+
+```
+<Layout>
+  <h1>This is an Idiom page!</h1>
+  <CodeSnippet lang="js">{`
+    console.log("Your components are autoloaded")
+  `}</CodeSnippet>
+</Layout>
+```
+
+`react-helmet` is included by default with Idiom:
+
+```
+<Layout>
+  <Helmet>
+    <title>myblog | This is an Idiom page!</title>
+    <script>
+      /* Add tracking code or third-party scripts */
+    </script>
+  </Helmet>
+
+  <h1>This is an Idiom page!</h1>
+  <CodeSnippet lang="js">{`
+    console.log("Your components are autoloaded")
+  `}</CodeSnippet>
+</Layout>
+```
+
 ## Development
 
 To run idiomjs while developing locally:
@@ -65,15 +96,14 @@ $ idiomjs serve
 
 Now when you make changes to the `idiomjs` source, you can restart the server to test those changes. See the docs on [npm-link](https://docs.npmjs.com/cli/v7/commands/npm-link) for more info.
 
+#### TODO
 
-TODO
-
-   - [ ] Fix React Helmet prerendering (https://github.com/nfl/react-helmet#server-usage)
    - [ ] Auto-refresh page on changes
    - [ ] Catch esbuild errors and display them in the server log (sometimes _index.js does not build)
    - [ ] Rename "serve" command to develop. Add a "-h" option to CLI
-   - [ ] Add react-helmet and docs for using it
    - [ ] Add docs for how directory structure works (rename "assets" to "static"?)
+   - [x] Add react-helmet and docs for using it
+   - [x] Fix React Helmet prerendering (https://github.com/nfl/react-helmet#server-usage)
    - [x] Don't use /dist for development output
    - [x] Remove file change logs from server output
    - [x] Minify build for production
