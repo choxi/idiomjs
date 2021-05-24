@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// console.log(require.main.paths)
+console.log(require.resolve("react-helmet"))
+
 const fs = require("fs")
 const path = require("path")
 
