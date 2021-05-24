@@ -19,7 +19,7 @@ class ReactRenderer {
       return `import ${ component.klass } from "../components/${ component.path }"`
     })
 
-    pages.forEach(page => {
+    const renders = pages.map(page => {
       const entrypointBody = `
         import React from "react"
         import Helmet from "react-helmet"
@@ -54,7 +54,7 @@ class ReactRenderer {
         plugins: [ SassPlugin() ]
       }
 
-      esbuild.build(options).then(() => {
+      return esbuild.build(options).then(() => {
         const loadPath = outfilePath
         const Component = require(loadPath).default
         const body = ReactDOMServer.renderToString(React.createElement(Component))
@@ -89,7 +89,7 @@ class ReactRenderer {
       })
     })
 
-    fse.rmdirSync(tmpDir)
+    return Promise.all(renders).then(() => fse.rmdirSync(tmpDir))
   }
 }
 

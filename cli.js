@@ -1,8 +1,5 @@
 #!/usr/bin/env node
 
-// console.log(require.main.paths)
-// console.log(require.resolve("react-helmet"))
-
 const path = require("path")
 const express = require("express")
 const chokidar = require("chokidar")
@@ -22,7 +19,9 @@ const command = process.argv[2]
 
 if (command === "build") {
   builder.build(project, buildDir, { sourcemap: true, minify: true })
-  renderer.render(project, buildDir)
+  renderer.render(project, buildDir).then(() => {
+    console.log("Site built")
+  })
 }
 
 if (command === "serve") {
