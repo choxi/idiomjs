@@ -18,8 +18,8 @@ const buildDir = path.join(".", ".build")
 const command = process.argv[2]
 
 if (command === "build") {
-  builder.build(project, buildDir, { sourcemap: true, minify: true })
-  renderer.render(project, buildDir).then(() => {
+  builder.build(project, distDir, { sourcemap: true, minify: true })
+  renderer.render(project, distDir).then(() => {
     console.log("Site built")
   })
 }
