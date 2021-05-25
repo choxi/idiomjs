@@ -49,7 +49,7 @@ When you're ready to deploy your site, you can run:
 $ idiomjs build
 ```
 
-This creates a `dist` directory that can be deployed to GitHub pages or any other static site host. The `build` command automatically prerenders your pages using `jsdom` so they can be parsed by search engines.
+This creates a `dist` directory that can be deployed to GitHub pages or any other static site host. The `build` command automatically prerenders your pages using `ReactDOMServer` so they can be parsed by search engines.
 
 ## Writing Pages
 
